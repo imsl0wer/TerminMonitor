@@ -20,7 +20,7 @@ def get_page_status():
     return "UNAVAILABLE"
 
   if "keine termine verfügbar" in text:
-    return "UNAVAILABLE
+    return "UNAVAILABLE"
 
   locations = []
 

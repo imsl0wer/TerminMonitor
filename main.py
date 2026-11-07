@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import os
 import time
 
-URL = "https://www.terminland.de/noris-psychotherapie/online/Autismus-Diagnostik%20Erwachsene%20(GKV)/"
+URL = "https://www.terminland.de/noris-psychotherapie/online/EGE/"
 
 logging.basicConfig(
   level=logging.INFO,

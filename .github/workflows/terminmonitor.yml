@@ -1,16 +1,17 @@
 
 name: TerminMonitor
 
+permissions:
+  contents: write
+  
+concurrency:
+  group: terminmonitor
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
   schedule:
     - cron: "*/10 * * * *"
-  permissions:
-    contents: write
-  
-  concurrency:
-    group: terminmonitor
-    cancel-in-progress: false
 
 jobs:
   check:

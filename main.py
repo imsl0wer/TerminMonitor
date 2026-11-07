@@ -36,7 +36,7 @@ def get_page_status():
 
   return "UNKNOWN"
 
-def send_notification(message)
+def send_notification(message):
   token = os.environ["TELEGRAM_BOT_TOKEN"]
   chat_id = os.environ["TELEGRAM_CHAT_ID"]
 

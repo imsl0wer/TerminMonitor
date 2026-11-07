@@ -54,26 +54,49 @@ def send_notification(message):
   response.raise_for_status()
   logging.info("Telegram notification sent successfully.")
 
+def load_previous_status():
+  try:
+    with open("status.txt", "r", encoding="utf-8") as file:
+      return file.read().strip()
+  except FileNotFoundError:
+    return None
+
+def save_status(status):
+  with open("status.txt", "w", encoding="utf-8") as file:
+    file.write(status)
+
 if __name__ == "__main__":
   logging.info("Checking Terminland...")
 
+  previous_status = load_previous_status()
+
   try:
-    status = get_page_status()
-    logging.info("Page status: %s", status)
+        status = get_page_status()
+        logging.info("Previous status: %s", previous_status)
+        logging.info("Current status: %s", status)
 
-    if status in ("POTENTIALLY_AVAILABLE", "UNKNOWN"):
-      logging.info("Waiting 15 seconds to confirm...")
-      time.sleep(15)
+        if status != previous_status:
+            logging.info("Status changed!")
 
-      confirmed_status = get_page_status()
+            if status in ("POTENTIALLY_AVAILABLE", "UNKNOWN"):
+                logging.info("Confirming change in 15 seconds...")
+                time.sleep(15)
 
-      if confirmed_status == status:
-        send_notification(
-          f"🔔 TerminMonitor\n\n"
-          f"Status: {status}\n\n"
-          f"Bitte Terminland überprüfen:\n{URL}"
-        )
+                confirmed_status = get_page_status()
+
+                if confirmed_status != status:
+                    logging.info("Change not confirmed.")
+                    status = previous_status
+                else:
+                    send_notification(
+                        f"🔔 TerminMonitor\n\n"
+                        f"Status changed: {previous_status} → {status}\n\n"
+                        f"{URL}"
+                    )
+
+            if status != previous_status:
+                save_status(status)
 
   except requests.RequestException:
-    logging.exception("HTTP request failed.")
-    raise
+        logging.exception("HTTP request failed.")
+        raise

@@ -2,6 +2,7 @@ import logging
 import requests
 from bs4 import BeautifulSoup
 import os
+import time
 
 URL = "https://www.terminland.de/noris-psychotherapie/online/Autismus-Diagnostik%20Erwachsene%20(GKV)/"
 
@@ -56,7 +57,23 @@ def send_notification(message):
 if __name__ == "__main__":
   logging.info("Checking Terminland...")
 
-  send_notification(
-    "🧪 TerminMonitor Test\n\n"
-    "Dein Python-Bot läuft erfolgreich auf GitHub Actions!"
-  )
+  try:
+    status = get_page_status()
+    logging.info("Page status: %s", status)
+
+    if status in ("POTENTIALLY_AVAILABLE", "UNKNOWN"):
+      logging.info("Waiting 15 seconds to confirm...")
+      time.sleep(15)
+
+      confirmed_status = get_page_status()
+
+      if confirmed_status == status:
+        send_notification(
+          f"🔔 TerminMonitor\n\n"
+          f"Status: {status}\n\n"
+          f"Bitte Terminland überprüfen:\n{URL}"
+        )
+
+  except requests.RequestException:
+    logging.exception("HTTP request failed.")
+    raise
